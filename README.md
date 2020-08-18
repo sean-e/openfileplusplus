@@ -13,3 +13,8 @@ Add your commonly used files to the list for quick access to them, especially if
 - Press Ctrl+N to add individual files to the list.
 - Press Ctrl+D to add the contents of other directories to the list.
 - Edit the list (Edit | Edit source list) to remove or deactivate items, or to make directory searches include sub-directories.
+
+## Development Notes
+- Built using Qt5
+- open openfileplusplus/project/openfilepp.pro in Qt Creator to build
+- Windows installer built using Inno Setup (see readme in openfileplusplus/setup/)
