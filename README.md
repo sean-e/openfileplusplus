@@ -1,7 +1,7 @@
 # OpenFile++
-OpenFile++ is a simple file opener.
+OpenFile++ is a simple file opener.  
 The installer adds it to the Windows Startup group so that it runs automatically on login.  
-It is hidden by default.
+It is hidden by default.  
 Add your commonly used files to the list for quick access to them, especially if they are in disparate directories.
 
 ## Usage
