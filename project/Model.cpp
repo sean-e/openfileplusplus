@@ -59,6 +59,7 @@ void AddModelDirItems(QStandardItemModel *model,
 
 			if (allowHidden || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))
 			{
+				// #todo-minor issue#4 support file exclusions (*.obj;*.dll;*.ilk;*.pch;/.vs/;) (applied when directories are scanned before user filtering)
 				const QString full(dir + "\\" + curFile);
 				AddModelItem(model, curFile, full);
 			}
@@ -77,10 +78,11 @@ void AddModelDirItems(QStandardItemModel *model,
 		if (!fi.isFile())
 			continue;
 
-		// #todo-minor support file exclusions (*.obj;*.dll;*.ilk;*.pch;/.vs/;) (applied when directories are scanned before user filtering)
-
 		if (allowHidden || !fi.isHidden())
+		{
+			// #todo-minor issue#4 support file exclusions (*.obj;*.dll;*.ilk;*.pch;/.vs/;) (applied when directories are scanned before user filtering)
 			AddModelItem(model, fi.fileName(), QDir::toNativeSeparators(fi.canonicalFilePath()));
+		}
 	}
 #endif
 }

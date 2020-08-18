@@ -252,7 +252,7 @@ AppWindow::InitWindowMenu()
 	mToggleHotkeyAction->setChecked(mHotkeyEnabled);
 #endif
 
-	// #todo-minor add command to edit file exclusions (*.obj;*.dll;) used by the model populater
+	// #todo-minor issue#4 add command to edit file exclusions (*.obj;*.dll;) used by the model populater
 
 	mToggleDarkmodeAction = optionsMenu->addAction(tr("&Dark mode"), this, &AppWindow::OnToggleDarkmode);
 	mToggleDarkmodeAction->setCheckable(true);
