@@ -16,8 +16,9 @@ Add your commonly used files to the list for quick access to them, especially if
 - Press Ctrl+C to copy the full path of the selected item to the clipboard.
 - Press Ctrl+E to open the selected item in Windows File Explorer.
 - Press F5 to refresh the list if recently created files are not listed.
-- Press Escape to hide the window, leaving it it still accessible for the Ctrl+Shift+O hotkey.
 - Use the Settings menu to enable dark mode style.
+- Press Escape to hide the window, leaving it it still accessible via the Ctrl+Shift+O hotkey.
+- Closing the window via the close button exits the program and Ctrl+Shift+O will not cause the window to appear.
 
 ## Development Notes
 - Dependent upon Qt5
