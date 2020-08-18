@@ -1,0 +1,10 @@
+
+#ifdef ISPP_INVOKED
+; define version either on cmd-line like:
+; iscc.exe /dOpenFileAppVersion=2020.xx.xx OpenFileSetup.iss
+; or set it below
+#endif
+
+#ifndef OpenFileAppVersion
+#define OpenFileAppVersion "2020.08.17"
+#endif

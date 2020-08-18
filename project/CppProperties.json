@@ -1,0 +1,44 @@
+{
+  "configurations": [
+    {
+      "inheritEnvironments": [
+        "msvc_x86"
+      ],
+      "name": "x86-Base",
+      "includePath": [
+        "${env.INCLUDE}",
+        "${workspaceRoot}\\**",
+        "$(QTDIR)\\include",
+        "$(QTDIR)\\include\\QtCore",
+        "$(QTDIR)\\include\\QtGui",
+        "$(QTDIR)\\include\\QtWidgets",
+        "$(QTDIR)\\mkspecs\\win32-x86-msvc2019"
+      ],
+      "defines": [
+        "WIN32",
+        "UNICODE",
+        "_UNICODE",
+        "Q_OS_WIN"
+      ],
+      "intelliSenseMode": "windows-msvc-x86"
+    },
+    {
+      "inheritEnvironments": [
+        "x86-Base"
+      ],
+      "name": "x86-Debug",
+      "defines": [
+        "_DEBUG"
+      ]
+    },
+    {
+      "inheritEnvironments": [
+        "x86-Base"
+      ],
+      "name": "x86-Release",
+      "defines": [
+        "NDEBUG"
+      ]
+    }
+  ]
+}
