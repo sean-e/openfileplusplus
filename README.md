@@ -17,5 +17,5 @@ Add your commonly used files to the list for quick access to them, especially if
 ## Development Notes
 - Dependent upon Qt5
 - Open openfileplusplus/project/openfilepp.pro in Qt Creator to build
+- In Visual Studio 2019, open openfileplusplus as a folder (openfileplusplus/project/CppProperties.json is dependent upon QTDIR environment variable being set similar to QTDIR=D:\Qt\5.15.0\msvc2019\ )
 - Windows installer built using Inno Setup (see readme in openfileplusplus/setup/)
-- In Visual Studio, open openfileplusplus as a folder (openfileplusplus/project/CppProperties.json is dependent upon QTDIR environment variable being set similar to QTDIR=D:\Qt\5.15.0\msvc2019\ )
