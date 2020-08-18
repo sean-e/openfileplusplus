@@ -229,7 +229,7 @@ AppWindow::InitWindowMenu()
 	copyAct->setStatusTip(tr("Copy the selection to the clipboard"));
 
 	const QIcon removeIcon = QIcon::fromTheme("edit-delete");
-	QAction *removeAct = editMenu->addAction(removeIcon, tr("Remove &item from list"), this, &AppWindow::OnRemove);
+	QAction *removeAct = editMenu->addAction(removeIcon, tr("Remove &item from list temporarily"), this, &AppWindow::OnRemove);
 	removeAct->setShortcuts(QKeySequence::Delete);
 	editMenu->addSeparator();
 
@@ -342,7 +342,7 @@ AppWindow::OnAbout()
 {
 	QString txt =
 		"<html><body>OpenFile++  (" OpenFileAppVersion ")<br><br>"
-		"<a href=\"https://github.com/sean-e/mtroll/\">https://github.com/sean-e/openfileplusplus/</a><br><br>"
+		"<a href=\"https://github.com/sean-e/openfileplusplus/\">https://github.com/sean-e/openfileplusplus/</a><br><br>"
 		"&copy; copyright 2020 Sean Echevarria<br><br>";
 	txt += "Uses the open source <a href=\"https://www.qt.io/download-open-source\">Qt</a> framework<br><br>"
 		"Licensed under GPL v3"
