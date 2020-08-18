@@ -341,7 +341,7 @@ SourceListEditorDlg::CreateModel()
 {
 	mModel = new QStandardItemModel(0, 4, this);
 	mModel->setHeaderData(0, Qt::Horizontal, QObject::tr("Enabled"));
-	mModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Recursive"));
+	mModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Subdirectories"));
 	mModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Item"));
 	mModel->setHeaderData(3, Qt::Horizontal, QObject::tr("Type"));
 
