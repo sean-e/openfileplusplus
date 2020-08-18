@@ -7,12 +7,17 @@ Add your commonly used files to the list for quick access to them, especially if
 ## Usage
 - Press Ctrl+Shift+O or click the program icon in the taskbar tray to open the window.
 - By default, the list is populated with files in your Documents, Downloads, and Desktop directories (but not sub-directories by default).
-- Start typing to find a file in the list.  You can enter multiple terms separated by a space.  If only a single item is left in the list, press enter to open it in the associated application.
+- Start typing to find a file in the list.  You can enter multiple terms separated by a space.  If only a single item is left in the list, press enter to open it in the associated application.  By default, the window closes automatically when you open a file in the list.
 - Up/down/page-up/page-down  change selection in the list even while focus is in the filter edit field.
 - Press enter to open the item(s) selected item in the list.
 - Press Ctrl+N to add individual files to the list.
 - Press Ctrl+D to add the contents of other directories to the list.
 - Edit the list (Edit | Edit source list) to remove or deactivate items, or to make directory searches include sub-directories.
+- Press Ctrl+C to copy the full path of the selected item to the clipboard.
+- Press Ctrl+E to open the selected item in Windows File Explorer.
+- Press F5 to refresh the list if recently created files are not listed.
+- Press Escape to hide the window, leaving it it still accessible for the Ctrl+Shift+O hotkey.
+- Use the Settings menu to enable dark mode style.
 
 ## Development Notes
 - Dependent upon Qt5
