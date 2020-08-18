@@ -224,9 +224,9 @@ AppWindow::InitWindowMenu()
 	editMenu->addSeparator();
 
 	const QIcon copyIcon = QIcon::fromTheme("edit-copy", QIcon(":/images/copy.png"));
-	QAction *copyAct = editMenu->addAction(copyIcon, tr("&Copy"), this, &AppWindow::OnCopy);
+	QAction *copyAct = editMenu->addAction(copyIcon, tr("&Copy path"), this, &AppWindow::OnCopy);
 	copyAct->setShortcuts(QKeySequence::Copy);
-	copyAct->setStatusTip(tr("Copy the selection to the clipboard"));
+	copyAct->setStatusTip(tr("Copy path of the selection to the clipboard"));
 
 	const QIcon removeIcon = QIcon::fromTheme("edit-delete");
 	QAction *removeAct = editMenu->addAction(removeIcon, tr("Remove &item from list temporarily"), this, &AppWindow::OnRemove);
