@@ -15,6 +15,7 @@ Add your commonly used files to the list for quick access to them, especially if
 - Edit the list (Edit | Edit source list) to remove or deactivate items, or to make directory searches include sub-directories.
 
 ## Development Notes
-- Built using Qt5
-- open openfileplusplus/project/openfilepp.pro in Qt Creator to build
+- Dependent upon Qt5
+- Open openfileplusplus/project/openfilepp.pro in Qt Creator to build
 - Windows installer built using Inno Setup (see readme in openfileplusplus/setup/)
+- In Visual Studio, open openfileplusplus as a folder (openfileplusplus/project/CppProperties.json is dependent upon QTDIR environment variable being set similar to QTDIR=D:\Qt\5.15.0\msvc2019\ )
