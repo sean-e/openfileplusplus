@@ -12,12 +12,17 @@
 #include <QTextStream>
 
 
+QString SourceListEditorDlg::mFileDlgDir;
+
 SourceListEditorDlg::SourceListEditorDlg(QWidget *parent) : 
 	QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint)
 {
 	InitWindow();
 	CreateModel();
 	LoadData();
+
+	if (mFileDlgDir.isEmpty())
+		mFileDlgDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 }
 
 void
@@ -178,20 +183,24 @@ SourceListEditorDlg::OnAccepted()
 void
 SourceListEditorDlg::OnAddDirectory()
 {
-	const QString dir(QFileDialog::getExistingDirectory(this, "Select Directory"));
+	QString dir(QFileDialog::getExistingDirectory(this, "Select Directory", mFileDlgDir));
 	if (dir.isEmpty())
 		return;
 
-	AddItem(mModelRows++, ItemType::itDirectory, QDir::toNativeSeparators(dir), true);
+	dir = QDir::toNativeSeparators(dir);
+	mFileDlgDir = dir;
+	AddItem(mModelRows++, ItemType::itDirectory, dir, true);
 }
 
 void
 SourceListEditorDlg::OnAddFile()
 {
-	const QString f(QFileDialog::getOpenFileName(this, "Select File"));
+	const QString f(QFileDialog::getOpenFileName(this, "Select File", mFileDlgDir));
 	if (f.isEmpty())
 		return;
 
+	QFileInfo fi(f);
+	mFileDlgDir = QDir::toNativeSeparators(fi.canonicalPath());
 	AddItem(mModelRows++, ItemType::itFile, QDir::toNativeSeparators(f), true);
 }
 

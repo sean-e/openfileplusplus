@@ -37,6 +37,7 @@ private:
 	QTreeView *mList = nullptr;
 	QStandardItemModel *mModel = nullptr;
 	int mModelRows = 0;
+	static QString mFileDlgDir;
 };
 
 void AppendToDatafile(const QString &txt);

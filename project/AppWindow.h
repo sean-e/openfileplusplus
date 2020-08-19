@@ -60,6 +60,7 @@ private:
 	QLineEdit   *mFilterPatternLineEdit = nullptr;
 	QTreeView   *mProxyView = nullptr;
 	QSortFilterProxyModel *mProxyModel = nullptr;
+	QString		mFileDlgDir;
 	QAction		*mToggleHotkeyAction = nullptr;
 	QAction		*mToggleClearFilterAction = nullptr;
 	QAction		*mToggleDarkmodeAction = nullptr;

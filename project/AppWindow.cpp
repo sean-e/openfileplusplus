@@ -38,6 +38,8 @@ AppWindow::AppWindow()
 	mProxyView->setColumnWidth(1, settings.value("col2width", 500).toInt());
 
 	OnToggleHotkey();
+
+	mFileDlgDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 }
 
 void
@@ -551,11 +553,13 @@ AppWindow::OnEditSourceList()
 void
 AppWindow::OnAddFile()
 {
-	QString f(QFileDialog::getOpenFileName(this, tr("Select File")));
+	QString f(QFileDialog::getOpenFileName(this, tr("Select File"), mFileDlgDir));
 	if (f.isEmpty())
 		return;
 
 	f = QDir::toNativeSeparators(f);
+	QFileInfo fi(f);
+	mFileDlgDir = fi.canonicalPath();
 	QString txt("[file]" + f);
 	AppendToDatafile(txt);
 	OnRefresh();
@@ -564,11 +568,12 @@ AppWindow::OnAddFile()
 void
 AppWindow::OnAddDirectory()
 {
-	QString f(QFileDialog::getExistingDirectory(this, tr("Select Directory")));
+	QString f(QFileDialog::getExistingDirectory(this, tr("Select Directory"), mFileDlgDir));
 	if (f.isEmpty())
 		return;
 
 	f = QDir::toNativeSeparators(f);
+	mFileDlgDir = f;
 	QString txt("[dir]" + f);
 	AppendToDatafile(txt);
 	OnRefresh();
