@@ -219,9 +219,9 @@ AppWindow::InitWindowMenu()
 
 	QMenu *editMenu = mMenuBar->addMenu(tr("&Edit"));
 
-	QAction *addFileAct = editMenu->addAction(tr("&Add file"), this, &AppWindow::OnAddFile);
+	QAction *addFileAct = editMenu->addAction(tr("&Add file..."), this, &AppWindow::OnAddFile);
 	addFileAct->setShortcut(tr("Ctrl+N"));
-	QAction *addDirAct = editMenu->addAction(tr("&Add directory"), this, &AppWindow::OnAddDirectory);
+	QAction *addDirAct = editMenu->addAction(tr("&Add directory..."), this, &AppWindow::OnAddDirectory);
 	addDirAct->setShortcut(tr("Ctrl+D"));
 	editMenu->addSeparator();
 
