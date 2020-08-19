@@ -13,13 +13,11 @@
 #include "DirectoryExclusionsEditor.h"
 
 
-bool gDarkMode = true;
-
 AppWindow::AppWindow()
 {
 	QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
-	gDarkMode = settings.value("darkmode", true).toBool();
-	if (gDarkMode)
+	mDarkMode = settings.value("darkmode", true).toBool();
+	if (mDarkMode)
 	{
 		// https://www.medo64.com/2020/08/dark-mode-for-qt-application/
 		qApp->setPalette(::GetDarkPalette());
@@ -164,7 +162,7 @@ AppWindow::InitTrayIcon()
 void
 AppWindow::setVisible(bool visible)
 {
-	if (visible && gDarkMode)
+	if (visible && mDarkMode)
 	{
 		// #todo-darkmode: deal with flash of white when made visible
 	}
@@ -258,7 +256,7 @@ AppWindow::InitWindowMenu()
 
 	mToggleDarkmodeAction = optionsMenu->addAction(tr("&Dark mode"), this, &AppWindow::OnToggleDarkmode);
 	mToggleDarkmodeAction->setCheckable(true);
-	mToggleDarkmodeAction->setChecked(gDarkMode);
+	mToggleDarkmodeAction->setChecked(mDarkMode);
 
 	mToggleHiddenAction = optionsMenu->addAction(tr("&Show hidden files"), this, &AppWindow::OnToggleHiddenContent);
 	mToggleHiddenAction->setCheckable(true);
@@ -408,11 +406,11 @@ void
 AppWindow::OnToggleDarkmode()
 {
 	QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
-	gDarkMode = !gDarkMode;
-	mToggleDarkmodeAction->setChecked(gDarkMode);
-	settings.setValue("darkmode", gDarkMode);
+	mDarkMode = !mDarkMode;
+	mToggleDarkmodeAction->setChecked(mDarkMode);
+	settings.setValue("darkmode", mDarkMode);
 
-	if (gDarkMode)
+	if (mDarkMode)
 	{
 		qApp->setPalette(::GetDarkPalette());
 		qApp->setStyleSheet(::GetDarkStyleSheet());

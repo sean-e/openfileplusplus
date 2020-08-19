@@ -68,6 +68,7 @@ private:
 	QAction		*mToggleHiddenAction = nullptr;
 	bool        mClearFilterOnExec = true;
 	bool		mShowHiddenContent = false;
+	bool		mDarkMode = false;
 
 	// state for system tray
 	QAction		*mRestoreAction = nullptr;
