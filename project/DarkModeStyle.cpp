@@ -113,30 +113,30 @@ GetDarkStyleSheet()
 		QScrollBar:horizontal { \
 			border: 1px #1a1a1a; \
 			background: #202020; \
-			height: 10px; \
-			margin: 0px 10px 0 10px; \
+			height: 20px; \
+			margin: 0px 20px 0 20px; \
 		} \
 		QScrollBar::handle:horizontal { \
 			background: #505050; \
-			min-width: 10px; \
+			min-width: 20px; \
 		} \
 		QScrollBar::add-line:horizontal { \
 			border: 1px #1a1a1a; \
 			background: #3a3a3a; \
-			width: 10px; \
+			width: 20px; \
 			subcontrol-position: right; \
 			subcontrol-origin: margin; \
 		} \
 		QScrollBar::sub-line:horizontal { \
 			border: 1px #1a1a1a; \
 			background: #3a3a3a; \
-			width: 10px; \
+			width: 20px; \
 			subcontrol-position: left; \
 			subcontrol-origin: margin; \
 		} \
 		QScrollBar:left-arrow:horizontal, QScrollBar::right-arrow:horizontal { \
 			border: 1px #1a1a1a; \
-			width: 3px; \
+			width: 6px; \
 			height: 3px; \
 			background: #808080; \
 		} \
@@ -147,24 +147,24 @@ GetDarkStyleSheet()
 		QScrollBar:vertical { \
 			border: 1px #1a1a1a; \
 			background: #202020; \
-			width: 10px; \
-			margin: 10px 0 10px 0; \
+			width: 20px; \
+			margin: 20px 0 20px 0; \
 		} \
 		QScrollBar::handle:vertical { \
 			background: #505050; \
-			min-height: 10px; \
+			min-height: 20px; \
 		} \
 		QScrollBar::add-line:vertical { \
 			border: 1px #1a1a1a; \
 			background: #3a3a3a; \
-			height: 10px; \
+			height: 20px; \
 			subcontrol-position: bottom; \
 			subcontrol-origin: margin; \
 		} \
 		QScrollBar::sub-line:vertical { \
 			border: 1px #1a1a1a; \
 			background: #3a3a3a; \
-			height: 10px; \
+			height: 20px; \
 			subcontrol-position: top; \
 			subcontrol-origin: margin; \
 		} \
