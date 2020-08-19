@@ -252,8 +252,6 @@ AppWindow::InitWindowMenu()
 	mToggleHotkeyAction->setChecked(mHotkeyEnabled);
 #endif
 
-	// #todo-minor issue#4 add command to edit file exclusions (*.obj;*.dll;) used by the model populater
-
 	mToggleDarkmodeAction = optionsMenu->addAction(tr("&Dark mode"), this, &AppWindow::OnToggleDarkmode);
 	mToggleDarkmodeAction->setCheckable(true);
 	mToggleDarkmodeAction->setChecked(mDarkMode);
@@ -442,7 +440,7 @@ AppWindow::OnToggleHotkey()
 	else
 	{
 #ifdef Q_OS_WIN
-		// #todo-minor add support for user-configurable hotkey
+		// #todo-minor issue #6 add support for user-configurable hotkey
 		if (::RegisterHotKey(HWND(winId()), 0, MOD_SHIFT | MOD_CONTROL, 'O'))
 			mHotkeyEnabled = true;
 		else
