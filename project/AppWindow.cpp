@@ -15,26 +15,21 @@
 
 AppWindow::AppWindow()
 {
-	QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
-	mDarkMode = settings.value("darkmode", true).toBool();
-	if (mDarkMode)
-	{
-		// https://www.medo64.com/2020/08/dark-mode-for-qt-application/
-		qApp->setPalette(::GetDarkPalette());
-		qApp->setStyleSheet(::GetDarkStyleSheet());
-	}
-
 	InitTrayIcon();
 	InitModel();
 	InitWindowMenu();
 	InitWindow();
 
+	QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
 	mShowHiddenContent = settings.value("showHiddenContent", false).toBool();
 	SetSourceModel(LoadModel(this, mShowHiddenContent));
 	mProxyView->setColumnWidth(0, settings.value("col1width", 400).toInt());
 	mProxyView->setColumnWidth(1, settings.value("col2width", 500).toInt());
 
 	OnToggleHotkey();
+
+	mDarkMode = !settings.value("darkmode", true).toBool();
+	OnToggleDarkmode();
 
 	mFileDlgDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 }
@@ -157,17 +152,6 @@ AppWindow::InitTrayIcon()
 	mTrayIcon->show();
 	setWindowIcon(icon);
 #endif
-}
-
-void
-AppWindow::setVisible(bool visible)
-{
-	if (visible && mDarkMode)
-	{
-		// #todo-darkmode: deal with flash of white when made visible
-	}
-
-	QWidget::setVisible(visible);
 }
 
 bool
@@ -418,6 +402,20 @@ AppWindow::OnToggleDarkmode()
 		qApp->setPalette(QStyleFactory::create("Fusion")->standardPalette());
 		qApp->setStyleSheet("");
 	}
+
+#ifdef Q_OS_WIN
+	DWORD origStyle = ::GetWindowLongPtrW(HWND(winId()), GWL_EXSTYLE);
+	if (mDarkMode)
+	{
+		// fix for flash of white window when it goes from hidden to visible
+		// caused by default WINDOWCLASS background brush.  The brush is used
+		// before WM_ERASEBKGND is sent.
+		::SetWindowLongPtrW(HWND(winId()), GWL_EXSTYLE, WS_EX_LAYERED | origStyle);
+		::SetLayeredWindowAttributes(HWND(winId()), 0, 255, LWA_ALPHA);
+	}
+	else
+		::SetWindowLongPtrW(HWND(winId()), GWL_EXSTYLE, ~WS_EX_LAYERED & origStyle);
+#endif
 }
 
 void

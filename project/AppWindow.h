@@ -50,7 +50,6 @@ private:
 	void DisplayWindow(bool useMousePosIfNotVisible);
 
 	// overrides
-	void setVisible(bool visible) override;
 	bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 	bool eventFilter(QObject *target, QEvent *event) override;
 	void closeEvent(QCloseEvent *event) override;
