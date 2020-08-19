@@ -4,96 +4,113 @@
 #include <QSettings>
 #include <QCoreApplication>
 #include <QStandardPaths>
+#include <QSet>
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
 #include "SourceListEditorDlg.h"
 
 
-void
-AddModelItem(QAbstractItemModel *model, 
-	const QString &name, 
-	const QString &path)
+class PopulateModel
 {
-	model->insertRow(0);
-	model->setData(model->index(0, 0), name, Qt::DisplayRole);
-	model->setData(model->index(0, 1), path, Qt::DisplayRole);
-}
-
-void AddModelDirItems(QStandardItemModel *model, 
-	const QString &dir, 
-	bool allowHidden, 
-	bool recurse)
-{
-#ifdef Q_OS_WIN
-	// QDirIterator is too slow on Windows mapped network drives, so use native API
-	HANDLE hFindFile;
-	WIN32_FIND_DATAW wfd;
-
-	std::wstring fstr((wchar_t*)dir.toStdU16String().c_str());
-	fstr += L"\\*.*";
-	hFindFile = ::FindFirstFileW(fstr.c_str(), &wfd);
-	if (INVALID_HANDLE_VALUE != hFindFile)
+public:
+	PopulateModel(QObject *parent)
 	{
-		do
+		mModel = new QStandardItemModel(0, 2, parent);
+		mModel->setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
+		mModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Path"));
+	}
+
+	~PopulateModel() = default;
+
+	QStandardItemModel* GetModel() const { return mModel; }
+
+	void AddModelItem(const QString &name, const QString &path)
+	{
+		if (mAdded.contains(path))
+			return;
+		
+		mAdded.insert(path);
+		mModel->insertRow(0);
+		mModel->setData(mModel->index(0, 0), name, Qt::DisplayRole);
+		mModel->setData(mModel->index(0, 1), path, Qt::DisplayRole);
+	}
+
+	void AddModelDirItems(const QString &dir, 
+		bool allowHidden, 
+		bool recurse)
+	{
+#ifdef Q_OS_WIN
+		// QDirIterator is too slow on Windows mapped network drives, so use native API
+		HANDLE hFindFile;
+		WIN32_FIND_DATAW wfd;
+
+		std::wstring fstr((wchar_t*)dir.toStdU16String().c_str());
+		fstr += L"\\*.*";
+		hFindFile = ::FindFirstFileW(fstr.c_str(), &wfd);
+		if (INVALID_HANDLE_VALUE != hFindFile)
 		{
-			const QString curFile(QString::fromStdWString(std::wstring(wfd.cFileName)));
-			if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			do
 			{
-				if ((wfd.cFileName[0] == L'.' && wfd.cFileName[1] == L'\0')
-					|| (wfd.cFileName[0] == L'.' && wfd.cFileName[1] == L'.' && wfd.cFileName[2] == L'\0'))
+				const QString curFile(QString::fromStdWString(std::wstring(wfd.cFileName)));
+				if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 				{
-					// "." and ".."
-				}
-				else if (recurse)
-				{
-					if (allowHidden || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))
+					if ((wfd.cFileName[0] == L'.' && wfd.cFileName[1] == L'\0')
+						|| (wfd.cFileName[0] == L'.' && wfd.cFileName[1] == L'.' && wfd.cFileName[2] == L'\0'))
 					{
-						const QString newDir(dir + "\\" + curFile);
-						AddModelDirItems(model, newDir, allowHidden, true);
+						// "." and ".."
 					}
+					else if (recurse)
+					{
+						if (allowHidden || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))
+						{
+							const QString newDir(dir + "\\" + curFile);
+							AddModelDirItems(newDir, allowHidden, true);
+						}
+					}
+
+					continue;
 				}
 
-				continue;
-			}
+				if (allowHidden || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))
+				{
+					// #todo-minor issue#4 support file exclusions (*.obj;*.dll;*.ilk;*.pch;/.vs/;) (applied when directories are scanned before user filtering)
+					const QString full(dir + "\\" + curFile);
+					AddModelItem(curFile, full);
+				}
+			} 
+			while (::FindNextFileW(hFindFile, &wfd));
+		}
 
-			if (allowHidden || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))
+		if (hFindFile != INVALID_HANDLE_VALUE)
+			::FindClose(hFindFile);
+#else
+		// this works on windows, but is slow on mapped network drives
+		QDirIterator di(dir, recurse ? QDirIterator::IteratorFlag::Subdirectories : QDirIterator::IteratorFlag::NoIteratorFlags);
+		while (di.hasNext())
+		{
+			QFileInfo fi(di.next());
+			if (!fi.isFile())
+				continue;
+
+			if (allowHidden || !fi.isHidden())
 			{
 				// #todo-minor issue#4 support file exclusions (*.obj;*.dll;*.ilk;*.pch;/.vs/;) (applied when directories are scanned before user filtering)
-				const QString full(dir + "\\" + curFile);
-				AddModelItem(model, curFile, full);
+				AddModelItem(mModel, fi.fileName(), QDir::toNativeSeparators(fi.canonicalFilePath()));
 			}
-		} 
-		while (::FindNextFileW(hFindFile, &wfd));
-	}
-
-	if (hFindFile != INVALID_HANDLE_VALUE)
-		::FindClose(hFindFile);
-#else
-	// this works on windows, but is slow on mapped network drives
-	QDirIterator di(dir, recurse ? QDirIterator::IteratorFlag::Subdirectories : QDirIterator::IteratorFlag::NoIteratorFlags);
-	while (di.hasNext())
-	{
-		QFileInfo fi(di.next());
-		if (!fi.isFile())
-			continue;
-
-		if (allowHidden || !fi.isHidden())
-		{
-			// #todo-minor issue#4 support file exclusions (*.obj;*.dll;*.ilk;*.pch;/.vs/;) (applied when directories are scanned before user filtering)
-			AddModelItem(model, fi.fileName(), QDir::toNativeSeparators(fi.canonicalFilePath()));
 		}
-	}
 #endif
-}
+	}
+
+private:
+	QStandardItemModel *mModel = nullptr;
+	QSet<QString> mAdded;
+};
 
 QAbstractItemModel *
 LoadModel(QObject *parent, bool allowHidden)
 {
-	QStandardItemModel *model = new QStandardItemModel(0, 2, parent);
-
-	model->setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
-	model->setHeaderData(1, Qt::Horizontal, QObject::tr("Path"));
+	PopulateModel pm(parent);
 
 	QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
 	QString fileName(settings.value("dataFile", "").toString());
@@ -115,7 +132,7 @@ LoadModel(QObject *parent, bool allowHidden)
 		if (!dir.isEmpty())
 		{
 			dir = QDir::toNativeSeparators(dir);
-			AddModelDirItems(model, dir, allowHidden, false);
+			pm.AddModelDirItems(dir, allowHidden, false);
 			dir = "[dir]" + dir;
 			AppendToDatafile(dir);
 		}
@@ -124,7 +141,7 @@ LoadModel(QObject *parent, bool allowHidden)
 		if (!dir.isEmpty())
 		{
 			dir = QDir::toNativeSeparators(dir);
-			AddModelDirItems(model, dir, allowHidden, false);
+			pm.AddModelDirItems(dir, allowHidden, false);
 			dir = "[dir]" + dir;
 			AppendToDatafile(dir);
 		}
@@ -133,20 +150,20 @@ LoadModel(QObject *parent, bool allowHidden)
 		if (!dir.isEmpty())
 		{
 			dir = QDir::toNativeSeparators(dir);
-			AddModelDirItems(model, dir, allowHidden, false);
+			pm.AddModelDirItems(dir, allowHidden, false);
 			dir = "[dir]" + dir;
 			AppendToDatafile(dir);
 		}
 
-		return model;
+		return pm.GetModel();
 	}
 
 	QFile f(fileName);
 	if (!f.exists())
-		return model;
+		return pm.GetModel();
 
 	if (!f.open(QIODevice::ReadOnly))
-		return model;
+		return pm.GetModel();
 
 	while (!f.atEnd()) 
 	{
@@ -167,27 +184,27 @@ LoadModel(QObject *parent, bool allowHidden)
 
 		if (tag == "[dir]")
 		{
-			AddModelDirItems(model, full, allowHidden, false);
+			pm.AddModelDirItems(full, allowHidden, false);
 		}
 		else if (tag == "[rdir]")
 		{
-			AddModelDirItems(model, full, allowHidden, true);
+			pm.AddModelDirItems(full, allowHidden, true);
 		}
 		else if (tag == "[file]")
 		{
 			QFileInfo f(full);
 			if (f.isFile())
-				AddModelItem(model, f.fileName(), full);
+				pm.AddModelItem(f.fileName(), full);
 		}
 		else if (tag == "[url]")
 		{
-			AddModelItem(model, full, full);
+			pm.AddModelItem(full, full);
 		}
 		else if (-1 == tag.indexOf(" inactive"))
 		{
-			AddModelItem(model, "unknown tag", curItem);
+			pm.AddModelItem("unknown tag", curItem);
 		}
 	}
 
-	return model;
+	return pm.GetModel();
 }
