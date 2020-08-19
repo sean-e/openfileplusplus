@@ -601,7 +601,30 @@ AppWindow::DisplayWindow(bool useMousePosIfNotVisible)
 	if (isHidden())
 	{
 		if (useMousePosIfNotVisible)
-			move(QCursor::pos());
+		{
+			QPoint pt(QCursor::pos());
+			move(pt);
+
+			QScreen *screen = QGuiApplication::screenAt(pt);
+			if (screen)
+			{
+				QRect rc(pt, size());
+				QRect screenGeometry = screen->availableGeometry();
+				if (!screenGeometry.contains(rc))
+				{
+					if (rc.size().height() < screenGeometry.size().height() &&
+						rc.size().width() < screenGeometry.size().width())
+					{
+						// constrain to screen that mouse cursor is on
+						if (rc.right() > screenGeometry.right())
+							pt.setX(screenGeometry.right() - rc.width() - 50);
+						if (rc.bottom() > screenGeometry.bottom())
+							pt.setY(screenGeometry.bottom() - rc.height() - 50);
+						move(pt);
+					}
+				}
+			}
+		}
 
 		show();
 	}
