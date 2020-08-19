@@ -38,6 +38,7 @@ private slots:
 	void OnEditSourceList();
 	void OnAddFile();
 	void OnAddDirectory();
+	void OnEditExclusions();
 	void OnIconActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:

@@ -58,6 +58,11 @@ GetDarkStyleSheet()
 			background: #1a1a1a; \
 		} \
 \
+		QLabel { \
+			color: white; \
+			background: #1a1a1a; \
+		} \
+\
 		QMenuBar { \
 			border: 1px black; \
 			background-color: #1a1a1a; \

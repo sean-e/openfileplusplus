@@ -5,6 +5,7 @@
 #include <QCoreApplication>
 #include <QStandardPaths>
 #include <QSet>
+#include <QRegularExpression>
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
@@ -19,6 +20,15 @@ public:
 		mModel = new QStandardItemModel(0, 2, parent);
 		mModel->setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
 		mModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Path"));
+
+		QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
+		QString exclusions = settings.value("exclusions", "").toString();
+		if (!exclusions.isEmpty())
+		{
+			mExclusions = QRegularExpression(exclusions, QRegularExpression::PatternOption::CaseInsensitiveOption);
+			mExclusions.optimize();
+			mFilter = true;
+		}
 	}
 
 	~PopulateModel() = default;
@@ -74,8 +84,14 @@ public:
 
 				if (allowHidden || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))
 				{
-					// #todo-minor issue#4 support file exclusions (*.obj;*.dll;*.ilk;*.pch;/.vs/;) (applied when directories are scanned before user filtering)
 					const QString full(dir + "\\" + curFile);
+					if (mFilter)
+					{
+						QRegularExpressionMatch it = mExclusions.match(full);
+						if (it.hasMatch())
+							continue;
+					}
+
 					AddModelItem(curFile, full);
 				}
 			} 
@@ -95,8 +111,15 @@ public:
 
 			if (allowHidden || !fi.isHidden())
 			{
-				// #todo-minor issue#4 support file exclusions (*.obj;*.dll;*.ilk;*.pch;/.vs/;) (applied when directories are scanned before user filtering)
-				AddModelItem(mModel, fi.fileName(), QDir::toNativeSeparators(fi.canonicalFilePath()));
+				const QString full(QDir::toNativeSeparators(fi.canonicalFilePath()));
+				if (mFilter)
+				{
+					QRegularExpressionMatch it = mExclusions.match(full);
+					if (it.hasMatch())
+						continue;
+				}
+
+				AddModelItem(mModel, fi.fileName(), full);
 			}
 		}
 #endif
@@ -105,6 +128,8 @@ public:
 private:
 	QStandardItemModel *mModel = nullptr;
 	QSet<QString> mAdded;
+	QRegularExpression mExclusions;
+	bool mFilter = false;
 };
 
 QAbstractItemModel *

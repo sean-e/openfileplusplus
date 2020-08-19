@@ -10,11 +10,10 @@
 #include "../setup/OpenFileVersion.txt"
 #include "SourceListEditorDlg.h"
 #include "DarkModeStyle.h"
+#include "DirectoryExclusionsEditor.h"
 
 
 bool gDarkMode = true;
-
-// #todo-minor support shell context menu on items in view
 
 AppWindow::AppWindow()
 {
@@ -219,9 +218,9 @@ AppWindow::InitWindowMenu()
 
 	QMenu *editMenu = mMenuBar->addMenu(tr("&Edit"));
 
-	QAction *addFileAct = editMenu->addAction(tr("&Add file..."), this, &AppWindow::OnAddFile);
+	QAction *addFileAct = editMenu->addAction(tr("Add &file..."), this, &AppWindow::OnAddFile);
 	addFileAct->setShortcut(tr("Ctrl+N"));
-	QAction *addDirAct = editMenu->addAction(tr("&Add directory..."), this, &AppWindow::OnAddDirectory);
+	QAction *addDirAct = editMenu->addAction(tr("Add &directory..."), this, &AppWindow::OnAddDirectory);
 	addDirAct->setShortcut(tr("Ctrl+D"));
 	editMenu->addSeparator();
 
@@ -237,6 +236,7 @@ AppWindow::InitWindowMenu()
 
 	const QIcon editIcon = QIcon::fromTheme("file-new", QIcon(":/images/new.png"));
 	editMenu->addAction(editIcon, tr("&Edit source list..."), this, &AppWindow::OnEditSourceList);
+	editMenu->addAction(tr("Edit directory e&xclusions..."), this, &AppWindow::OnEditExclusions);
 
 	QAction *refreshAct = editMenu->addAction(tr("&Refresh"), this, &AppWindow::OnRefresh);
 	refreshAct->setShortcut(tr("F5"));
@@ -577,6 +577,14 @@ AppWindow::OnAddDirectory()
 	QString txt("[dir]" + f);
 	AppendToDatafile(txt);
 	OnRefresh();
+}
+
+void
+AppWindow::OnEditExclusions()
+{
+	DirectoryExclusionsEditor dee(this);
+	if (dee.exec() == QDialog::Accepted)
+		OnRefresh();
 }
 
 void
