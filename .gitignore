@@ -4,5 +4,8 @@
 
 .vs/*
 bin/*
+project/.vs/*
+project/debug/*
+project/release/*
 ReleaseDependencies/*
 setup/*.exe
