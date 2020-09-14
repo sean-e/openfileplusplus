@@ -75,7 +75,7 @@ public:
 						if (allowHidden || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))
 						{
 							const QString newDir(dir + "\\" + curFile);
-							AddModelDirItems(newDir, allowHidden, true);
+							AddModelDirItems(newDir, allowHidden, recurse);
 						}
 					}
 
@@ -89,6 +89,13 @@ public:
 					{
 						QRegularExpressionMatch it = mExclusions.match(full);
 						if (it.hasMatch())
+							continue;
+					}
+
+					if (mHasDirSearchSpec)
+					{
+						QRegularExpressionMatch it = mDirSearchSpec.match(curFile);
+						if (!it.hasMatch())
 							continue;
 					}
 
@@ -119,18 +126,61 @@ public:
 						continue;
 				}
 
-				AddModelItem(mModel, fi.fileName(), full);
+				if (mHasDirSearchSpec)
+				{
+					QRegularExpressionMatch it = mDirSearchSpec.match(fi.fileName());
+					if (!it.hasMatch())
+						continue;
+				}
+
+				AddModelItem(fi.fileName(), full);
 			}
 		}
 #endif
+	}
+
+	void SetDirectorySearchSpec(QString searchSpec)
+	{
+		if (searchSpec.isEmpty())
+		{
+			mHasDirSearchSpec = false;
+			return;
+		}
+
+		mHasDirSearchSpec = true;
+		searchSpec.replace(".", "[.]");
+		searchSpec.replace("*", ".*");
+		mDirSearchSpec = QRegularExpression{ searchSpec, QRegularExpression::PatternOption::CaseInsensitiveOption };
 	}
 
 private:
 	QStandardItemModel *mModel = nullptr;
 	QSet<QString> mAdded;
 	QRegularExpression mExclusions;
+	QRegularExpression mDirSearchSpec;
 	bool mFilter = false;
+	bool mHasDirSearchSpec = false;
 };
+
+void
+SplitSearchSpec(QString full, 
+	QString &dir, 
+	QString &searchSpec)
+{
+	dir = full;
+	searchSpec.clear();
+
+	int p1 = full.indexOf("[[");
+	if (-1 == p1)
+		return;
+
+	int p2 = full.indexOf("]]");
+	if (-1 == p2)
+		return;
+
+	dir = full.left(p1);
+	searchSpec = full.mid(p1 + 2, p2 - p1 - 2);
+}
 
 QAbstractItemModel *
 LoadModel(QObject *parent, bool allowHidden)
@@ -209,11 +259,17 @@ LoadModel(QObject *parent, bool allowHidden)
 
 		if (tag == "[dir]")
 		{
-			pm.AddModelDirItems(full, allowHidden, false);
+			QString dir, searchSpec;
+			SplitSearchSpec(full, dir, searchSpec);
+			pm.SetDirectorySearchSpec(searchSpec);
+			pm.AddModelDirItems(dir, allowHidden, false);
 		}
 		else if (tag == "[rdir]")
 		{
-			pm.AddModelDirItems(full, allowHidden, true);
+			QString dir, searchSpec;
+			SplitSearchSpec(full, dir, searchSpec);
+			pm.SetDirectorySearchSpec(searchSpec);
+			pm.AddModelDirItems(dir, allowHidden, true);
 		}
 		else if (tag == "[file]")
 		{
