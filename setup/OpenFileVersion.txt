@@ -6,5 +6,5 @@
 #endif
 
 #ifndef OpenFileAppVersion
-#define OpenFileAppVersion "2020.08.19a"
+#define OpenFileAppVersion "2020.09.14"
 #endif
