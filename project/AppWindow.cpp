@@ -69,7 +69,7 @@ AppWindow::InitWindow()
 
 	QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
 	const QByteArray geometry = settings.value("mainWndGeometry", QByteArray()).toByteArray();
-	if (geometry.isEmpty()) 
+	if (geometry.isEmpty())
 		resize(1000, 450);
 	else
 		restoreGeometry(geometry);
@@ -91,9 +91,9 @@ AppWindow::InitFilterEdit()
 bool
 AppWindow::eventFilter(QObject *target, QEvent *evt)
 {
-	if (target == mFilterPatternLineEdit) 
+	if (target == mFilterPatternLineEdit)
 	{
-		if (evt->type() == QEvent::KeyPress) 
+		if (evt->type() == QEvent::KeyPress)
 		{
 			QKeyEvent *keyEvent = static_cast<QKeyEvent *>(evt);
 			switch (keyEvent->key())
@@ -143,7 +143,7 @@ AppWindow::InitTrayIcon()
 
 	mTrayIcon = new QSystemTrayIcon(this);
 	mTrayIcon->setContextMenu(mTrayIconMenu);
-//	connect(mTrayIcon, &QSystemTrayIcon::messageClicked, this, &AppWindow::OnMessageClicked);
+	//	connect(mTrayIcon, &QSystemTrayIcon::messageClicked, this, &AppWindow::OnMessageClicked);
 	connect(mTrayIcon, &QSystemTrayIcon::activated, this, &AppWindow::OnIconActivated);
 
 	QIcon icon(":/images/bad.png");
@@ -192,6 +192,12 @@ AppWindow::InitWindowMenu()
 	QAction *closeAct = fileMenu->addAction(tr("&Hide window"), this, &QWidget::hide);
 	closeAct->setShortcut(tr("Esc"));
 	closeAct->setStatusTip(tr("Hide this window"));
+
+	// [issue: #14] added restart command to fix fucked up scaling on Windows after
+	// it shits all over itself when there are multiple monitors that Windows
+	// can't keep track of
+	QAction *restartAct = fileMenu->addAction(tr("&Restart because DPI scaling is fucked up"), this, &AppWindow::OnRestart);
+	restartAct->setStatusTip(tr("Restart the application"));
 
 	const QIcon exitIcon = QIcon::fromTheme("application-exit");
 	QAction *exitAct = fileMenu->addAction(exitIcon, tr("E&xit"), qApp, &QCoreApplication::quit);
@@ -325,7 +331,7 @@ AppWindow::OnAbout()
 	QString txt =
 		"<html><body>OpenFile++  (" OpenFileAppVersion ")<br><br>"
 		"<a href=\"https://github.com/sean-e/openfileplusplus/\">https://github.com/sean-e/openfileplusplus/</a><br><br>"
-		"&copy; copyright 2020 Sean Echevarria<br><br>";
+		"&copy; copyright 2020,2022 Sean Echevarria<br><br>";
 	txt += "Uses the open source <a href=\"https://www.qt.io/download-open-source\">Qt</a> framework<br><br>"
 		"Licensed under GPL v3"
 		"</body></html>";
@@ -364,7 +370,7 @@ AppWindow::OnCopy()
 	QClipboard *clipboard = QGuiApplication::clipboard();
 	if (!clipboard)
 		return;
-		
+
 	QString txt;
 	QModelIndexList items(mProxyView->selectionModel()->selectedIndexes());
 	constexpr int kColumns = 2;
@@ -584,7 +590,7 @@ AppWindow::OnEditExclusions()
 void
 AppWindow::OnIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
-	switch (reason) 
+	switch (reason)
 	{
 	case QSystemTrayIcon::Trigger:
 	case QSystemTrayIcon::DoubleClick:
@@ -633,4 +639,17 @@ AppWindow::DisplayWindow(bool useMousePosIfNotVisible)
 
 	raise();
 	activateWindow();
+}
+
+void
+AppWindow::OnRestart()
+{
+	if (mHotkeyEnabled)
+		OnToggleHotkey();
+
+	QProcess newInstance;
+	newInstance.setProgram(QCoreApplication::applicationFilePath());
+	newInstance.startDetached();
+
+	QCoreApplication::quit();
 }

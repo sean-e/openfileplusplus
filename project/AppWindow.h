@@ -28,6 +28,7 @@ private slots:
 	void OnOpenInFileManager();
 	void OnAbout();
 	void OnRefresh();
+    void OnRestart();
 	void OnRemove();
 	void OnCopy();
 	void OnToggleDarkmode();
