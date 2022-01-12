@@ -4,13 +4,15 @@ HEADERS       = AppWindow.h \
                 DarkModeStyle.h \
                 Model.h \
                 DirectoryExclusionsEditor.h \
-                SourceListEditorDlg.h
+				SourceListEditorDlg.h\
+				WinDark.h
 SOURCES       = main.cpp \
                 AppWindow.cpp \
                 DarkModeStyle.cpp \
                 Model.cpp \
                 DirectoryExclusionsEditor.cpp \
-                SourceListEditorDlg.cpp
+				SourceListEditorDlg.cpp \
+				WinDark.cpp
 RESOURCES     = OpenFile.qrc
 
 # Q_OS_WIN

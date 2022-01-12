@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <shlobj.h>
 #include <combaseapi.h>
+#include "WinDark.h"
 #endif
 #include "AppWindow.h"
 #include "Model.h"
@@ -421,6 +422,8 @@ AppWindow::OnToggleDarkmode()
 	}
 	else
 		::SetWindowLongPtrW(HWND(winId()), GWL_EXSTYLE, ~WS_EX_LAYERED & origStyle);
+
+	WinDark::setDarkTitlebar(HWND(winId()), mDarkMode);
 #endif
 }
 
