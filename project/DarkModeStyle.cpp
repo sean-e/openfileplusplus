@@ -26,6 +26,7 @@ GetDarkPalette()
 	pal.setColor(QPalette::Mid, gDarkModeBackgroundColor);
 
 	// pal.setColor(QPalette::Disabled, QPalette::Text, QColor(127, 127, 127));
+	// Other elements: ToolTipBase, ToolTipText, BrightText, Link, Highlight, HighlightedText
 	return pal;
 }
 
